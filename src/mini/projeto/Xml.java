@@ -1,10 +1,16 @@
-package model;
+package mini.projeto;
 
 public class Xml {
 
 	private String title;
 	private String pubDate;
 	private String enclosure;
+	
+	public Xml(String title, String pubDate, String enclosure) {
+		this.title = title;
+		this.pubDate = pubDate;
+		this.enclosure = enclosure;
+	}
 	
 	public String getTitle() {
 		return title;
