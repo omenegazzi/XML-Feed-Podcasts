@@ -19,9 +19,9 @@ import org.xml.sax.SAXException;
 public class main {
 
 	public static void main(String[] args) {
-		
+
 		Scanner in = new Scanner(System.in);
-		
+
 		Runnable runnable = () -> {
 
 			try {
@@ -31,57 +31,54 @@ public class main {
 				System.out.println("Digite o endereço abaixo: ");
 				String address = in.nextLine();
 				System.out.println("Baixando arquivo XML...");
-								
+
 				Document doc = dBuilder.parse(address);
-								
-				// Document doc = dBuilder.parse("http://leopoldomt.com/if710/fronteirasdaciencia.xml");
+
 				// http://leopoldomt.com/if710/fronteirasdaciencia.xml
-				doc.getDocumentElement().normalize();				
+				doc.getDocumentElement().normalize();
 				NodeList nList = doc.getElementsByTagName("item");
 
 				if (nList.getLength() == 0) {
 					System.out.println("XML não está no padrão configurado!");
 				} else {
 					System.out.println("Arquivo Baixado!");
-					System.out.println("----------------------------------------------");	
-					
-					//Xml xmlPodcast = new Xml();
-					List<Xml> x1 = null;
-					ArrayList<Xml> agenda = new ArrayList();
-				
-										
+					System.out.println("----------------------------------------------");
+
+					ArrayList<Xml> xml = new ArrayList();
+
 					for (int temp = 0; temp < nList.getLength(); temp++) {
 						Node nNode = nList.item(temp);
 						if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element eElement = (Element) nNode;									  
-							Element enclosureURL = (Element) eElement.getElementsByTagName("enclosure").item(0).getChildNodes();
+							Element eElement = (Element) nNode;
+							Element enclosureURL = (Element) eElement.getElementsByTagName("enclosure").item(0)
+									.getChildNodes();
 
-							Xml xmlPodcast = new Xml(eElement.getElementsByTagName("title").item(0).getTextContent(), eElement.getElementsByTagName("pubDate").item(0).getTextContent(), 
+							Xml xmlPodcast = new Xml(eElement.getElementsByTagName("title").item(0).getTextContent(),
+									eElement.getElementsByTagName("pubDate").item(0).getTextContent(),
 									enclosureURL.getAttribute("url").toString());
-																		
-							x1 = Arrays.asList(xmlPodcast);
-							agenda.add(xmlPodcast);							
-							
+
+							xml.add(xmlPodcast);
+
 						}
 					}
-										
+
 					System.out.println("Último programa publicado: \n");
-					
-					System.out.println("Título : " + agenda.get(agenda.size() -1).getTitle());
-					System.out.println("Data de Publicação : " + agenda.get(agenda.size() -1).getPubDate());
+
+					System.out.println("Título : " + xml.get(xml.size() - 1).getTitle());
+					System.out.println("Data de Publicação : " + xml.get(xml.size() - 1).getPubDate());
 
 					System.out.println("\n");
 					System.out.println("Escolha uma opção: \n");
 					System.out.println(" D - Download de Episódios \n B - Buscar Episódios \n");
 					String option = in.nextLine();
-					
-					while(!option.toUpperCase().equals("D")) {
+
+					while (!option.toUpperCase().equals("D")) {
 						System.out.printf("Você digitou uma operação inválida.");
-					}				
-														
+					}
+
 					DownloadEpisodios();
 
-				}				
+				}
 
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
@@ -99,15 +96,15 @@ public class main {
 		new Thread(runnable).start();
 
 	}
-	
-	public static void DownloadEpisodios(){
-		 Scanner in = new Scanner(System.in);
-		 System.out.println("Digite a quantidade de episódios para baixar: \n");
-		 int quant = in.nextInt();
-	 }
-	 
-	 public static void BuscarEpisodios(){
-		 
-	 }
+
+	public static void DownloadEpisodios() {
+		Scanner in = new Scanner(System.in);
+		System.out.println("Digite a quantidade de episódios para baixar: \n");
+		int quant = in.nextInt();
+	}
+
+	public static void BuscarEpisodios() {
+
+	}
 
 }
