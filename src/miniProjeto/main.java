@@ -1,5 +1,7 @@
 package miniProjeto;
 
+//http://leopoldomt.com/if710/fronteirasdaciencia.xml
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,13 +35,18 @@ public class main {
 
 	public static void main(String[] args) {
 
+		// Instanciado a classe Scanner para fazer a leitura do que for digitado no console.
 		Scanner in = new Scanner(System.in);
 
+		// Instanciado a interface Runnable para executar os codigos abaixo da thread.
 		Runnable runnable = () -> {
 
 			try {
-				// http://leopoldomt.com/if710/fronteirasdaciencia.xml
+
+				// A classe realiza a análise do XML para obter os os uma arvore do DOM.
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				
+				//A Classe analisa 
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
 				System.out.println("Digite o endereço abaixo: ");
@@ -105,10 +112,10 @@ public class main {
 			} catch (ParserConfigurationException e) {
 				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
 				main.main(args);
-				//e.printStackTrace();
+				// e.printStackTrace();
 			} catch (SAXException e) {
 				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
-				//e.printStackTrace();
+				// e.printStackTrace();
 				main.main(args);
 			} catch (IOException e) {
 				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
@@ -125,7 +132,6 @@ public class main {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Digite a quantidade de episódios para baixar: \n");
 		String valor = in.nextLine();
-				
 
 		while (!valor.substring(0).matches("[0-9]*")) {
 			System.out.println("ATENÇÃO! Somente é aceito números! \n");
@@ -136,21 +142,22 @@ public class main {
 		int val = Integer.parseInt(valor);
 		ArrayList<String> xmlDownload = new ArrayList();
 		ArrayList<String> xmlValid = new ArrayList();
-			
+
 		for (int i = 0; i < xml.size(); i++) {
 			xmlValid.add(xml.get(i).getEnclosure());
-		}			
-		
-		while (val > xmlValid.size()) {			
-			System.out.println("O número de episódios informado é maior do que a quantidade de episódios disponíveis no XML.");
+		}
+
+		while (val > xmlValid.size()) {
+			System.out.println(
+					"O número de episódios informado é maior do que a quantidade de episódios disponíveis no XML.");
 			System.out.println("Informe uma quantidade menor!");
 			val = in.nextInt();
 		}
-		
-		for (int i = 0; i < val; i++) {			
+
+		for (int i = 0; i < val; i++) {
 			xmlDownload.add(xml.get(i).getEnclosure());
 		}
-			
+
 		for (int i = 0; i < xmlDownload.size(); i++) {
 			String di = xmlDownload.get(i).toString();
 			Runnable threadDown = () -> {
@@ -203,39 +210,47 @@ public class main {
 			boolean isDateFin = true;
 			String dIni = "";
 			String dFin = "";
-			
+
 			do {
 				isDateIni = true;
-				System.out.println(" Digite a data Inicial: (dd\\mm\\aaaa) \n");	
+				System.out.println(" Digite a data Inicial: (dd\\mm\\aaaa) \n");
 				dIni = inn.nextLine();
-				Date dataaIni = null;				
+				Date dataaIni = null;
 				SimpleDateFormat forr = new SimpleDateFormat("dd/MM/yyyy");
-		    	try {
-		    		forr.setLenient(false);
-		    		dataaIni = forr.parse(dIni);
-		    		
-		    	} catch (ParseException e) {
-		    		System.out.println(" Data Inicial não está no formato adequado! (dd\\mm\\aaaa)");
-		    		isDateIni = false;		    		
-		    	}				
+				try {
+					forr.setLenient(false);
+					dataaIni = forr.parse(dIni);
+
+				} catch (ParseException e) {
+					System.out.println(" Data Inicial não está no formato adequado! (dd\\mm\\aaaa)");
+					isDateIni = false;
+				}
 			} while (!isDateIni);
-			
-			do {
-				isDateFin = true;
+
+			do {				
 				System.out.println(" Digite a data Final: (dd\\mm\\aaaa) \n");
 				dFin = inn.nextLine();
 				Date dataaFin = null;				
 				SimpleDateFormat forr = new SimpleDateFormat("dd/MM/yyyy");
 				try {
-		    		forr.setLenient(false);
-		    		dataaFin = forr.parse(dFin);
-		    		
-		    	} catch (ParseException e) {
-		    		System.out.println(" Data Final não está no formato adequado! (dd\\mm\\aaaa)");
-		    		isDateFin = false;		    		
-		    	}	
+					isDateFin = false;
+					Date data1;
+					forr.setLenient(false);
+					dataaFin = forr.parse(dFin);
+					data1 = new Date(forr.parse(dIni).getTime());
+					Date data2 = new Date(forr.parse(dFin).getTime());
+					if(data1.after(data2)){
+						System.out.println("Impossível realizar a busca a data: " + dIni + " é posterior à " + dFin);						
+					}else {
+						isDateFin = true;
+					}
+				} catch (ParseException e) {
+					System.out.println(" Data Final não está no formato adequado! (dd\\mm\\aaaa)");
+					isDateFin = false;
+				}
 			} while (!isDateFin);
-	    
+			
+
 			try {
 
 				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
