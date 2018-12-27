@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +38,7 @@ public class main {
 		Runnable runnable = () -> {
 
 			try {
-
+				// http://leopoldomt.com/if710/fronteirasdaciencia.xml
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
@@ -49,9 +48,6 @@ public class main {
 
 				Document doc = dBuilder.parse(address);
 
-				// Document doc =
-				// dBuilder.parse("http://leopoldomt.com/if710/fronteirasdaciencia.xml");
-				// http://leopoldomt.com/if710/fronteirasdaciencia.xml
 				doc.getDocumentElement().normalize();
 				NodeList nList = doc.getElementsByTagName("item");
 
@@ -80,46 +76,43 @@ public class main {
 						}
 					}
 
-					// agenda.forEach(c -> System.out.println(c.getPubDate()));
-
-					// Stream<Xml> stream = x1.stream().filter(c -> c.getEnclosure() == ".mp3");
-					// List<Xml> ponto = stream.collect(Collectors.toList());
-
 					System.out.println("Último programa publicado: \n");
 
 					System.out.println("Título : " + xml.get(xml.size() - 1).getTitle());
 					System.out.println("Data de Publicação : " + xml.get(xml.size() - 1).getPubDate());
 
-					System.out.println("\n");
-					System.out.println("Escolha uma opção: \n");
-					System.out.println(" D - Download de Episódios \n B - Buscar Episódios \n");
-					String option = in.nextLine();
+					do {
 
-					/*
-					 * while(!option.toUpperCase().equals("D")) {
-					 * System.out.printf("Você digitou uma operação inválida."); }
-					 */
+						System.out.println("\n");
+						System.out.println("Escolha uma opção: \n");
+						System.out.println(" D - Download de Episódios \n B - Buscar Episódios \n");
+						String option = in.nextLine();
 
-					if (option.equals("D")) {
-						DownloadEpisodios(xml);
-					}
+						switch (option.toUpperCase()) {
+						case "D":
+							DownloadEpisodios(xml);
+							break;
+						case "B":
+							BuscarEpisodios(xml);
+							break;
+						default:
+						}
 
-					if (option.equals("B")) {
-						BuscarEpisodios(xml);
-					}
+					} while (true);
 
 				}
 
 			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
+				main.main(args);
+				//e.printStackTrace();
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
+				//e.printStackTrace();
+				main.main(args);
 			} catch (IOException e) {
-				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido! \n");
-
-				// main.main(args);
+				System.out.println("ATENÇÃO ERRO! Endereço de feed Inválido, ou sua conexão com a Internet parou! \n");
+				main.main(args);
 				// e.printStackTrace();
 			}
 
@@ -131,25 +124,42 @@ public class main {
 	public static void DownloadEpisodios(ArrayList<Xml> xml) {
 		Scanner in = new Scanner(System.in);
 		System.out.println("Digite a quantidade de episódios para baixar: \n");
-		int quant = in.nextInt();
+		String valor = in.nextLine();
+				
 
-		ArrayList<String> xmlDownload = new ArrayList();
-
-		for (int i = 0; i < quant; i++) {
-			xmlDownload.add(xml.get(i).getEnclosure());
+		while (!valor.substring(0).matches("[0-9]*")) {
+			System.out.println("ATENÇÃO! Somente é aceito números! \n");
+			System.out.println("Digite a quantidade de episódios para baixar: \n");
+			valor = in.nextLine();
 		}
 
-		// Testar depois, mas o for deve estar fora da thread
+		int val = Integer.parseInt(valor);
+		ArrayList<String> xmlDownload = new ArrayList();
+		ArrayList<String> xmlValid = new ArrayList();
+			
+		for (int i = 0; i < xml.size(); i++) {
+			xmlValid.add(xml.get(i).getEnclosure());
+		}			
+		
+		while (val > xmlValid.size()) {			
+			System.out.println("O número de episódios informado é maior do que a quantidade de episódios disponíveis no XML.");
+			System.out.println("Informe uma quantidade menor!");
+			val = in.nextInt();
+		}
+		
+		for (int i = 0; i < val; i++) {			
+			xmlDownload.add(xml.get(i).getEnclosure());
+		}
+			
+		for (int i = 0; i < xmlDownload.size(); i++) {
+			String di = xmlDownload.get(i).toString();
+			Runnable threadDown = () -> {
+				try {
 
-		Runnable threadDown = () -> {
-			try {
-
-				for (int i = 0; i < xmlDownload.size(); i++) {
-
-					URLConnection conn = new URL(xmlDownload.get(i).toString()).openConnection();
+					URLConnection conn = new URL(di).openConnection();
 					InputStream is = conn.getInputStream();
 
-					String[] result = xmlDownload.get(i).toString().split("\\/");
+					String[] result = di.split("\\/");
 
 					OutputStream outstream = new FileOutputStream(new File("src/" + result[9]));
 					byte[] buffer = new byte[4096];
@@ -158,90 +168,109 @@ public class main {
 					while ((len = is.read(buffer)) > 0) {
 						outstream.write(buffer, 0, len);
 					}
+
 					outstream.close();
+
 					System.out.println("Episódio Baixado!");
 
+				} catch (IOException e) {
+
+					System.out.println("Não foi possivel fazer o download" + e.getMessage());
 				}
-
-			} catch (IOException e) {
-
-				System.out.println("Não foi possivel fazer o download" + e.getMessage());
-			}
-		};
-
-		new Thread(threadDown).start();
-
-		/*
-		 * while(!quant.substring(0).matches("[0-9]*")) {
-		 * System.out.println("Somente é aceito números!");
-		 * System.out.println("Digite a quantidade de episódios para baixar: \n"); quant
-		 * = in.nextLine(); }
-		 */
+			};
+			new Thread(threadDown).start();
+		}
 
 	}
 
-	// http://leopoldomt.com/if710/fronteirasdaciencia.xml
 	public static void BuscarEpisodios(ArrayList<Xml> xml) {
-		// convert list to stream
-		// we dont like mkyong
-		// collect the output and convert streams to a List
 
 		Scanner inn = new Scanner(System.in);
 		System.out.println(" Você deseja buscar por: \n S - String \n D - Data \n");
 		String input = inn.nextLine();
 
-		if (input.equals("S")) {
+		if (input.toUpperCase().equals("S")) {
 			System.out.println(" Digite a string  para buscar: \n");
 			String str = inn.nextLine();
-			
-			xml.stream().filter(x -> x.getTitle().toString().contains(str) || x.getDescription().toString().contains(str))
-				.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));
+
+			xml.stream()
+					.filter(x -> x.getTitle().toString().contains(str) || x.getDescription().toString().contains(str))
+					.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));
 		}
 
-		if (input.equals("D")) {
-			System.out.println(" Digite a data Inicial: (dd\\mm\\aaaa) \n");
-			String dIni = inn.nextLine();
+		if (input.toUpperCase().equals("D")) {
+			boolean isDateIni = true;
+			boolean isDateFin = true;
+			String dIni = "";
+			String dFin = "";
 			
-			System.out.println(" Digite a data Final: (dd\\mm\\aaaa) \n");
-			String dFin = inn.nextLine();
+			do {
+				isDateIni = true;
+				System.out.println(" Digite a data Inicial: (dd\\mm\\aaaa) \n");	
+				dIni = inn.nextLine();
+				Date dataaIni = null;				
+				SimpleDateFormat forr = new SimpleDateFormat("dd/MM/yyyy");
+		    	try {
+		    		forr.setLenient(false);
+		    		dataaIni = forr.parse(dIni);
+		    		
+		    	} catch (ParseException e) {
+		    		System.out.println(" Data Inicial não está no formato adequado! (dd\\mm\\aaaa)");
+		    		isDateIni = false;		    		
+		    	}				
+			} while (!isDateIni);
+			
+			do {
+				isDateFin = true;
+				System.out.println(" Digite a data Final: (dd\\mm\\aaaa) \n");
+				dFin = inn.nextLine();
+				Date dataaFin = null;				
+				SimpleDateFormat forr = new SimpleDateFormat("dd/MM/yyyy");
+				try {
+		    		forr.setLenient(false);
+		    		dataaFin = forr.parse(dFin);
+		    		
+		    	} catch (ParseException e) {
+		    		System.out.println(" Data Final não está no formato adequado! (dd\\mm\\aaaa)");
+		    		isDateFin = false;		    		
+		    	}	
+			} while (!isDateFin);
+	    
+			try {
 
-			try {	
-				
-				
-				SimpleDateFormat format = new SimpleDateFormat ("dd/MM/yyyy");								
-				SimpleDateFormat format1 = new SimpleDateFormat ("yyyy-MM-dd");
-				SimpleDateFormat format2 = new SimpleDateFormat ("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-						
-		        Date dataIni = format.parse(dIni);
-		        Date dataFin = format.parse(dFin);	
-		        
-		        String dInicio = format1.format(dataIni);
-		        String dFinal = format1.format(dataFin);
-		        
-		        String Inicio = format2.format(dataIni);
-		        String Final = format2.format(dataFin);  
-		        
-		        LocalDate start = LocalDate.parse(dInicio);
-		        int days = 1000;
-		        
-		        List a = Stream.iterate(start, date -> date.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(LocalDate.parse(dInicio), LocalDate.parse(dFinal)))
-                .collect(Collectors.toList());
-		                		        
-		        for (int i = 0; i < a.size(); i++) {		        			        	
-		        	String di = a.get(i).toString();
-		            Date dia = format1.parse(di);
-			        String dI = format2.format(dia);
-		        	xml.stream().filter(x -> x.getPubDate().toString().contains(dI.substring(0,15)))
-						.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));		
+				SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+				SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat format2 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+
+				Date dataIni = format.parse(dIni);
+				Date dataFin = format.parse(dFin);
+
+				String dInicio = format1.format(dataIni);
+				String dFinal = format1.format(dataFin);
+
+				String Inicio = format2.format(dataIni);
+				String Final = format2.format(dataFin);
+
+				LocalDate start = LocalDate.parse(dInicio);
+				int days = 1000;
+
+				List a = Stream.iterate(start, date -> date.plusDays(1))
+						.limit(ChronoUnit.DAYS.between(LocalDate.parse(dInicio), LocalDate.parse(dFinal)))
+						.collect(Collectors.toList());
+
+				for (int i = 0; i < a.size(); i++) {
+					String di = a.get(i).toString();
+					Date dia = format1.parse(di);
+					String dI = format2.format(dia);
+					xml.stream().filter(x -> x.getPubDate().toString().contains(dI.substring(0, 15)))
+							.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));
 				}
 
-				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-						
+
 		}
 
 	}
