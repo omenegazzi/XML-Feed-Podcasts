@@ -5,13 +5,15 @@ public class Xml {
 	private String title;
 	private String pubDate;
 	private String enclosure;
+	private String description;	
 	
-	public Xml(String title, String pubDate, String enclosure) {
+	public Xml(String title, String pubDate, String enclosure, String description) {
 		this.title = title;
 		this.pubDate = pubDate;
 		this.enclosure = enclosure;
+		this.description = description;
 	}
-	
+		
 	public String getTitle() {
 		return title;
 	}
@@ -36,4 +38,13 @@ public class Xml {
 		this.enclosure = enclosure;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 }
+
