@@ -1,4 +1,4 @@
-package mini.projeto;
+package miniProjeto;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -190,18 +190,6 @@ public class main {
 		System.out.println(" Você deseja buscar por: \n S - String \n D - Data \n");
 		String input = inn.nextLine();
 
-		// List<Xml> result = xml.stream().filter(s ->
-		// s.equals(input)).collect(Collectors.toList());
-
-		// .filter((p) -> "jack".equals(p.getName()) && 20 == p.getAge())
-
-		/*
-		 * Person result1 = persons.stream() .filter((p) -> "jack".equals(p.getName())
-		 * && 20 == p.getAge()) .findAny() .orElse(null)
-		 */
-
-		// result.forEach(System.out::println);
-
 		if (input.equals("S")) {
 			System.out.println(" Digite a string  para buscar: \n");
 			String str = inn.nextLine();
@@ -216,21 +204,9 @@ public class main {
 			
 			System.out.println(" Digite a data Final: (dd\\mm\\aaaa) \n");
 			String dFin = inn.nextLine();
-			
-			//
-			
+
 			try {	
 				
-				//LocalDate start = LocalDate.parse("2010-06-20");
-				//LocalDate end = LocalDate.parse("2010-07-28");
-				
-				
-				
-				/*List<LocalDate> dates = Stream.iterate(start, date -> date.plusDays(1))
-				    .limit(ChronoUnit.DAYS.between(start, end))
-				    .collect(Collectors.toList());
-				System.out.println(dates.size());
-				System.out.println(dates);*/
 				
 				SimpleDateFormat format = new SimpleDateFormat ("dd/MM/yyyy");								
 				SimpleDateFormat format1 = new SimpleDateFormat ("yyyy-MM-dd");
@@ -243,23 +219,7 @@ public class main {
 		        String dFinal = format1.format(dataFin);
 		        
 		        String Inicio = format2.format(dataIni);
-		        String Final = format2.format(dataFin);
-		        
-		        //final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
-		        
-		        
-		        //String data =    "Nov 22 00:00:00 BRST 2011";
-		        //String pattern = "MMM dd HH:mm:ss zzzz yyyy";
-		        //DateFormat df = new SimpleDateFormat(pattern);
-		        //Date date = df.parse(data);
-		        
-		        //LocalDate startDate = LocalDate.parse(dInicio);
-		        //LocalDate endDate = LocalDate.parse(dFinal);
-		        
-		        /*while (!startDate.isAfter(endDate)) {
-		         System.out.println(startDate);
-		         startDate = startDate.plusDays(1);
-		        }*/
+		        String Final = format2.format(dataFin);  
 		        
 		        LocalDate start = LocalDate.parse(dInicio);
 		        int days = 1000;
@@ -267,51 +227,15 @@ public class main {
 		        List a = Stream.iterate(start, date -> date.plusDays(1))
                 .limit(ChronoUnit.DAYS.between(LocalDate.parse(dInicio), LocalDate.parse(dFinal)))
                 .collect(Collectors.toList());
-		        
-		        
-		        
-		    	        		        
+		                		        
 		        for (int i = 0; i < a.size(); i++) {		        			        	
 		        	String di = a.get(i).toString();
 		            Date dia = format1.parse(di);
 			        String dI = format2.format(dia);
 		        	xml.stream().filter(x -> x.getPubDate().toString().contains(dI.substring(0,15)))
-						.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));
-					//System.out.println(a.get(i).toString());
-					
+						.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));		
 				}
-		        		       		        
-		        		        
-		        
-		        
-		        /*xml.stream().filter(x -> x.getPubDate().toString().contains(dIni.substring(0,15)))
-				.forEach(enclosure -> System.out.println(enclosure.getEnclosure()));*/
-		        
-		        //LocalDate start = LocalDate.parse("2016-10-12");
-		        //LocalDate end = LocalDate.parse("2016-10-14");
-		        		       		       		       
-		        /*List<LocalDate> dates = Stream.iterate(start, d -> d.plusDays(1))
-		            .limit(ChronoUnit.DAYS.between(start, end))
-		            .collect(Collectors.toList());*/
-		        		       		       
-		        
-		        
-		        //Optional<Pessoa> optPessoa = listaPessoas.stream().filter(p -> p.getIdade() > 20).findFirst();		        
-		        //Optional<Xml> xx = xml.stream().filter(p-> p.getDate() > date);
-		        //int res = date1.compareTo(date2);
-		        
-		        /*List<String> dateStrings = Arrays.asList("10.10.2016", "11.10.2016", "11.10.2016", "12.10.2016", "13.10.2016","14.10.2016","15.10.2016");
-		        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-		        List<LocalDate> localDates = dateStrings.stream().map((d) -> LocalDate.parse(d, formatter)).collect(Collectors.toList());
-		        System.out.println(localDates);*/
-		        
-		        //xml.stream().filter(x -> df.parse(x.getPubDate()) > localDates);
-		        
-		        
-		        //list.stream().filter(ChronoUnit.DAYS.between(currDate,
-		        //	    ZonedDateTime.ofInstant((df.parse(stringdate).toInstant(),ZoneId.of("UTC"))) == 4)  
-		        
-				
+
 				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

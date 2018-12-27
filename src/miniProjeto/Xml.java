@@ -1,4 +1,4 @@
-package mini.projeto;
+package miniProjeto;
 
 public class Xml {
 
